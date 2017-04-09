@@ -1,0 +1,12 @@
+{
+    "name": "terminal42/background-process",
+    "require": {
+        "php": ">=5.5.9",
+        "symfony/process": "^3.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Terminal42\\BackgroundProcess\\": "src/"
+        }
+    }
+}
