@@ -80,7 +80,7 @@ class ProcessRunner extends AbstractProcess
 
             $config = $this->loadConfig();
 
-            if ($running && $config['stop']) {
+            if ($running && isset($config['stop']) && $config['stop']) {
                 return $this->stop();
             }
 
