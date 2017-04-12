@@ -1,0 +1,39 @@
+<?php
+
+namespace Terminal42\BackgroundProcess\Command;
+
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Terminal42\BackgroundProcess\ProcessRunner;
+
+class ProcessRunnerCommand extends Command
+{
+    /**
+     * {@inheritdoc}
+     */
+    protected function configure()
+    {
+        $this
+            ->setName('background-task:run')
+            ->setDescription('Execute a background task')
+            ->addArgument('path', InputArgument::REQUIRED, 'Absolute path to the task config file.')
+        ;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $process = new ProcessRunner($input->getArgument('path'));
+
+        try {
+            $process->run();
+        } catch (\Exception $e) {
+            $process->addErrorOutput((string) $e);
+            $process->stop();
+        }
+    }
+}
