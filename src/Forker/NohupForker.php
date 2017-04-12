@@ -17,7 +17,7 @@ class NohupForker implements ForkerInterface
      */
     public function run($command)
     {
-        (new Process('nohup ' . $command))->mustRun();
+        (new Process('nohup ' . $command . ' >/dev/null 2>&1 &'))->start();
     }
 
     /**

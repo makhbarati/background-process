@@ -47,14 +47,9 @@ abstract class AbstractProcess
             throw new \InvalidArgumentException(sprintf('Config file "%s" does not contain valid JSON.', $file));
         }
 
-        return static::validateConfig($config);
-    }
-
-    protected static function validateConfig(array $config)
-    {
-        if (!isset($config['uuid'])) {
+        /*if (!isset($config['uuid'])) {
             throw new \InvalidArgumentException('Missing property "uuid" in config file.');
-        }
+        }*/
 
         return $config;
     }

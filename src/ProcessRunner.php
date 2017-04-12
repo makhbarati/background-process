@@ -34,6 +34,11 @@ class ProcessRunner extends AbstractProcess
         $this->loadConfig($config);
     }
 
+    public function __destruct()
+    {
+        $this->stop(0);
+    }
+
     public function run($interval = 1)
     {
         $this->start();
@@ -76,7 +81,7 @@ class ProcessRunner extends AbstractProcess
             $config = $this->loadConfig();
 
             if ($running && $config['stop']) {
-                $this->process->stop();
+                return $this->stop();
             }
 
             $this->saveConfig();
@@ -89,10 +94,12 @@ class ProcessRunner extends AbstractProcess
 
     public function stop($timeout = 10)
     {
-        $this->process->stop($timeout);
+        $exitCode = $this->process->stop($timeout);
 
         $this->saveConfig();
         $this->close();
+
+        return $exitCode;
     }
 
     private function close()
@@ -150,14 +157,25 @@ class ProcessRunner extends AbstractProcess
 
     private function saveConfig()
     {
+        $status = $this->process->getStatus();
+
         $config = [
+            'commandline' => $this->process->getCommandLine(),
+            'cwd' => $this->process->getWorkingDirectory(),
             'timeout' => $this->process->getTimeout(),
             'idleTimeout' => $this->process->getIdleTimeout(),
 
             'pid' => $this->process->getPid(),
-            'exitcode' => $this->process->getExitCode(),
-            'status' => $this->process->getStatus(),
+            'status' => $status,
         ];
+
+        if (Process::STATUS_TERMINATED === $status) {
+            $config['exitcode'] = $this->process->getExitCode();
+            $config['signaled'] = $this->process->hasBeenSignaled();
+            $config['termsig'] = $this->process->getTermSignal();
+            $config['stopped'] = $this->process->hasBeenStopped();
+            $config['stopsig'] = $this->process->getStopSignal();
+        }
 
         file_put_contents($this->getFile, json_encode($config));
     }
