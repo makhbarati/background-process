@@ -18,14 +18,21 @@ class ProcessController extends AbstractProcess
     private $forkers = [];
 
     /**
+     * @var string
+     */
+    private $command;
+
+    /**
      * Constructor.
      *
      * @param array  $config
      * @param string $workDir
+     * @param string $command
      */
-    public function __construct(array $config, $workDir)
+    public function __construct(array $config, $workDir, $command = null)
     {
         $this->config = $config;
+        $this->command = $command ?: escapeshellarg(__DIR__.'/../bin/background-process');
 
         parent::__construct($this->config['uuid'], $workDir);
     }
@@ -43,7 +50,7 @@ class ProcessController extends AbstractProcess
 
         $forker = $this->getForker();
 
-        return $forker->run(escapeshellarg(__DIR__.'/../bin/background-process') . ' ' . escapeshellarg($this->setFile));
+        return $forker->run($this->command . ' ' . escapeshellarg($this->setFile));
     }
 
     public function getPid()
