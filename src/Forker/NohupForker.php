@@ -7,17 +7,53 @@ use Symfony\Component\Process\Process;
 
 class NohupForker implements ForkerInterface
 {
+    /**
+     * @var string
+     */
+    private $executable;
+
+    /**
+     * Constructor.
+     *
+     * @param string $executable
+     */
+    public function __construct($executable = null)
+    {
+        $this->executable = $executable ?: escapeshellarg(__DIR__.'/../../bin/background-process');
+    }
+
+    /**
+     * @param string $executable
+     */
+    public function setExecutable($executable)
+    {
+        $this->executable = $executable;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExecutable()
+    {
+        return $this->executable;
+    }
 
     /**
      * Executes a command.
      *
-     * @param string $command
+     * @param string $configFile
      *
      * @throws ProcessFailedException
      */
-    public function run($command)
+    public function run($configFile)
     {
-        (new Process('nohup ' . $command . ' >/dev/null 2>&1 &'))->start();
+        $commandline = sprintf(
+            'nohup %s %s >/dev/null 2>&1 &',
+            $this->executable,
+            escapeshellarg($configFile)
+        );
+
+        (new Process($commandline))->start();
     }
 
     /**
