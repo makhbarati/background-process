@@ -31,6 +31,10 @@ class ProcessController extends AbstractProcess
      */
     public function __construct(array $config, $workDir, $command = null)
     {
+        if (!isset($config['status'])) {
+            $config['status'] = Process::STATUS_READY;
+        }
+
         $this->config = $config;
         $this->command = $command ?: escapeshellarg(__DIR__.'/../bin/background-process');
 
@@ -182,8 +186,6 @@ class ProcessController extends AbstractProcess
         return new static(
             [
                 'uuid' => $uuid ?: 'foo', // TODO create uuid
-                'status' => Process::STATUS_READY,
-
                 'commandline' => $commandline,
                 'cwd' => $cwd ?: getcwd(),
             ],
