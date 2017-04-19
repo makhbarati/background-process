@@ -2,6 +2,7 @@
 
 namespace Terminal42\BackgroundProcess;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Process;
 use Terminal42\BackgroundProcess\Forker\ForkerInterface;
 
@@ -16,20 +17,28 @@ class ProcessController extends AbstractProcess
      * @var ForkerInterface[]
      */
     private $forkers = [];
+    /**
+     * @var null|LoggerInterface
+     */
+    private $logger;
 
     /**
      * Constructor.
      *
-     * @param array  $config
-     * @param string $workDir
+     * @param array                $config
+     * @param string               $workDir
+     * @param LoggerInterface|null $logger
+     *
+     * @throws \InvalidArgumentException If the working directory does not exist
      */
-    public function __construct(array $config, $workDir)
+    public function __construct(array $config, $workDir, LoggerInterface $logger = null)
     {
         if (!isset($config['status'])) {
             $config['status'] = Process::STATUS_READY;
         }
 
         $this->config = $config;
+        $this->logger = $logger;
 
         parent::__construct($this->config['uuid'], $workDir);
     }
@@ -39,6 +48,11 @@ class ProcessController extends AbstractProcess
         $this->forkers[] = $forker;
     }
 
+    public function setLogger(LoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+    }
+
     public function start()
     {
         $this->saveConfig();
@@ -46,6 +60,13 @@ class ProcessController extends AbstractProcess
         $this->config['status'] = Process::STATUS_STARTED;
 
         $forker = $this->getForker();
+
+        if (null !== $this->logger) {
+            $this->logger->info(
+                'Starting background process with forker "{forker_class}"',
+                ['forker_class' => get_class($forker)]
+            );
+        }
 
         return $forker->run($this->setFile);
     }
