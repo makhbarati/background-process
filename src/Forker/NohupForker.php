@@ -18,7 +18,7 @@ class NohupForker extends AbstractForker
             escapeshellarg($configFile)
         );
 
-        (new Process($commandline))->start();
+        return $this->startCommand($commandline);
     }
 
     /**
