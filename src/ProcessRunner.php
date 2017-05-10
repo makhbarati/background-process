@@ -1,4 +1,5 @@
 <?php
+declare(ticks = 1);
 
 namespace Terminal42\BackgroundProcess;
 
@@ -52,6 +53,15 @@ class ProcessRunner extends AbstractProcess
             return;
         }
 
+        register_shutdown_function([$this, 'signalHandler'], 15 /* SIGTERM */);
+
+        if (function_exists('pcntl_signal')) {
+            pcntl_signal(SIGHUP, [$this, 'signalHandler']);
+            pcntl_signal(SIGINT, [$this, 'signalHandler']);
+            pcntl_signal(SIGQUIT, [$this, 'signalHandler']);
+            pcntl_signal(SIGTERM, [$this, 'signalHandler']);
+        }
+
         if (is_file($this->inputFile)) {
             $this->stdin = fopen($this->inputFile, 'rb');
             $this->process->setInput($this->stdin);
@@ -94,6 +104,10 @@ class ProcessRunner extends AbstractProcess
 
     public function stop($timeout = 10)
     {
+        if (!$this->process->isRunning()) {
+            return $this->process->getExitCode();
+        }
+
         $exitCode = $this->process->stop($timeout);
 
         $this->saveConfig();
@@ -115,6 +129,11 @@ class ProcessRunner extends AbstractProcess
         if (is_resource($this->stderr)) {
             fclose($this->stderr);
         }
+    }
+
+    private function signalHandler($signo)
+    {
+        $this->stop(15 === $signo ? 0 : 10);
     }
 
     public function addOutput($line)
