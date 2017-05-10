@@ -51,7 +51,7 @@ abstract class AbstractForker implements ForkerInterface
     protected function startCommand($commandline)
     {
         if (null !== $this->logger) {
-            $this->logger->debug(
+            $this->logger->info(
                 'Starting "{commandline}" with {forker_class}',
                 [
                     'commandline' => $commandline,

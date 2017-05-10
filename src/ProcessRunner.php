@@ -53,13 +53,17 @@ class ProcessRunner extends AbstractProcess
             return;
         }
 
-        register_shutdown_function([$this, 'signalHandler'], 15 /* SIGTERM */);
+        $handler = function ($signo = 15) {
+            return $this->signalHandler($signo);
+        };
+
+        register_shutdown_function($handler);
 
         if (function_exists('pcntl_signal')) {
-            pcntl_signal(SIGHUP, [$this, 'signalHandler']);
-            pcntl_signal(SIGINT, [$this, 'signalHandler']);
-            pcntl_signal(SIGQUIT, [$this, 'signalHandler']);
-            pcntl_signal(SIGTERM, [$this, 'signalHandler']);
+            pcntl_signal(SIGHUP, $handler);
+            pcntl_signal(SIGINT, $handler);
+            pcntl_signal(SIGQUIT, $handler);
+            pcntl_signal(SIGTERM, $handler);
         }
 
         if (is_file($this->inputFile)) {
