@@ -49,7 +49,7 @@ class ProcessController extends AbstractProcess
 
         $forker = $this->getForker();
 
-        return $forker->run($this->setFile);
+        $forker->run($this->setFile);
     }
 
     public function getPid()
@@ -91,6 +91,15 @@ class ProcessController extends AbstractProcess
     public function stop()
     {
         $this->config['stop'] = true;
+    }
+
+    public function delete()
+    {
+        if (!$this->isTerminated()) {
+            throw new \LogicException('Cannot delete a running process.');
+        }
+
+        $this->close();
     }
 
     public function getCommandLine()
@@ -161,19 +170,15 @@ class ProcessController extends AbstractProcess
         if (is_file($this->getFile)) {
             $this->config = array_merge($this->config, static::readConfig($this->getFile));
         }
-
-        if (Process::STATUS_STARTED !== $this->config['status']) {
-            //$this->close();
-        }
     }
 
     private function close()
     {
-        unlink($this->setFile);
-        unlink($this->getFile);
-        unlink($this->inputFile);
-        unlink($this->outputFile);
-        unlink($this->errorOutputFile);
+        @unlink($this->setFile);
+        @unlink($this->getFile);
+        @unlink($this->inputFile);
+        @unlink($this->outputFile);
+        @unlink($this->errorOutputFile);
     }
 
     public static function create($workDir, $commandline, $cwd = null, $uuid = null)
@@ -188,8 +193,14 @@ class ProcessController extends AbstractProcess
         );
     }
 
-    public static function restore($file)
+    public static function restore($workDir, $uuid)
     {
-        return new static(static::readConfig($file), dirname($file));
+        $config = static::readConfig($workDir.'/'.$uuid.'.set.json');
+
+        if (is_file($getFile = $workDir.'/'.$uuid.'.get.json')) {
+            $config = array_merge($config, static::readConfig($getFile));
+        }
+
+        return new static($config, $workDir);
     }
 }

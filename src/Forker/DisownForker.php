@@ -18,7 +18,7 @@ class DisownForker extends AbstractForker
             escapeshellarg($configFile)
         );
 
-        return $this->startCommand($commandline);
+        $this->startCommand($commandline);
     }
 
     /**
