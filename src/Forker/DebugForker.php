@@ -20,7 +20,7 @@ class DebugForker extends AbstractForker
             escapeshellarg($configFile)
         );
 
-        $process = new Process($commandline);
+        $process = new Process('exec '.$commandline);
 
         $this->logger->info('Starting ' . $commandline);
 

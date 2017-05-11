@@ -13,7 +13,7 @@ class DisownForker extends AbstractForker
     public function run($configFile)
     {
         $commandline = sprintf(
-            '%s %s >/dev/null 2>&1 </dev/null & disown',
+            'exec %s %s >/dev/null 2>&1 </dev/null & disown',
             $this->executable,
             escapeshellarg($configFile)
         );
@@ -27,7 +27,7 @@ class DisownForker extends AbstractForker
     public function isSupported()
     {
         try {
-            (new Process("echo '' & disown"))->mustRun();
+            (new Process("exec echo '' & disown"))->mustRun();
         } catch (ProcessFailedException $e) {
             return false;
         }
