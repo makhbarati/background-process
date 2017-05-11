@@ -60,6 +60,26 @@ abstract class AbstractForker implements ForkerInterface
             );
         }
 
-        (new Process($commandline))->start();
+        $process = new Process($commandline);
+
+        $process->start();
+
+        usleep(500);
+
+        if (null !== $this->logger && !$process->isRunning()) {
+            $this->logger->error(
+                'Process did not start correctly',
+                [
+                    'commandline' => $commandline,
+                    'forker_class' => get_called_class(),
+                    'exit_code' => $process->getExitCode(),
+                    'exit_text' => $process->getExitCodeText(),
+                    'stopped' => $process->hasBeenStopped(),
+                    'signaled' => $process->hasBeenSignaled(),
+                    'stopsignal' => $process->getStopSignal(),
+                    'termsignal' => $process->getTermSignal(),
+                ]
+            );
+        }
     }
 }
