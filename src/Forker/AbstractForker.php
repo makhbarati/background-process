@@ -18,6 +18,11 @@ abstract class AbstractForker implements ForkerInterface
     protected $logger;
 
     /**
+     * @var int
+     */
+    private $timeout = 500;
+
+    /**
      * Constructor.
      *
      * @param string               $executable
@@ -31,10 +36,14 @@ abstract class AbstractForker implements ForkerInterface
 
     /**
      * @param string $executable
+     *
+     * @return $this
      */
     public function setExecutable($executable)
     {
         $this->executable = $executable;
+
+        return $this;
     }
 
     /**
@@ -43,6 +52,20 @@ abstract class AbstractForker implements ForkerInterface
     public function getExecutable()
     {
         return $this->executable;
+    }
+
+    /**
+     * Sets the timeout in milliseconds to wait after starting a process.
+     *
+     * @param int $timeout
+     *
+     * @return $this
+     */
+    public function setTimeout($timeout)
+    {
+        $this->timeout = (int) $timeout;
+
+        return $this;
     }
 
     /**
@@ -64,7 +87,7 @@ abstract class AbstractForker implements ForkerInterface
 
         $process->start();
 
-        usleep(500);
+        usleep($this->timeout);
 
         if (null !== $this->logger && !$process->isRunning()) {
             $this->logger->error(
