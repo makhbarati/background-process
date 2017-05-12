@@ -43,7 +43,7 @@ class ProcessController extends AbstractProcess
 
     public function start()
     {
-        $this->saveConfig();
+        $this->saveConfig(true);
 
         $this->config['status'] = Process::STATUS_STARTED;
 
@@ -91,6 +91,8 @@ class ProcessController extends AbstractProcess
     public function stop()
     {
         $this->config['stop'] = true;
+
+        $this->saveConfig();
     }
 
     public function delete()
@@ -110,11 +112,15 @@ class ProcessController extends AbstractProcess
     public function setCommandLine($commandline)
     {
         $this->config['commandline'] = $commandline;
+
+        $this->saveConfig();
     }
 
     public function setWorkingDirectory($cwd)
     {
         $this->config['cwd'] = $cwd;
+
+        $this->saveConfig();
     }
 
     public function getOutput()
@@ -138,11 +144,15 @@ class ProcessController extends AbstractProcess
     public function setTimeout($timeout)
     {
         $this->config['timeout'] = $timeout;
+
+        $this->saveConfig();
     }
 
     public function setIdleTimeout($timeout)
     {
         $this->config['idleTimeout'] = $timeout;
+
+        $this->saveConfig();
     }
 
     private function getForker()
@@ -156,9 +166,11 @@ class ProcessController extends AbstractProcess
         throw new \RuntimeException('No forker found for your current platform.');
     }
 
-    private function saveConfig()
+    private function saveConfig($always = false)
     {
-        file_put_contents($this->setFile, json_encode($this->config));
+        if ($always || Process::STATUS_STARTED === $this->config['status']) {
+            file_put_contents($this->setFile, json_encode($this->config));
+        }
     }
 
     private function updateStatus()
