@@ -25,7 +25,7 @@ class ProcessRunner extends AbstractProcess
     {
         $config = static::readConfig($configFile);
 
-        parent::__construct($config['uuid'], dirname($configFile));
+        parent::__construct($config['id'], dirname($configFile));
 
         $commandline = isset($config['commandline']) ? $config['commandline'] : '';
         $cwd = isset($config['cwd']) ? $config['cwd'] : null;

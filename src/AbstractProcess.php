@@ -13,12 +13,12 @@ abstract class AbstractProcess
     /**
      * Constructor.
      *
-     * @param string $uuid
+     * @param string $id
      * @param string $workDir
      *
      * @throws \InvalidArgumentException If the working directory does not exist
      */
-    public function __construct($uuid, $workDir)
+    public function __construct($id, $workDir)
     {
         $workDir = realpath(rtrim($workDir, '/'));
 
@@ -28,11 +28,11 @@ abstract class AbstractProcess
             );
         }
 
-        $this->setFile = $workDir.'/'.$uuid.'.set.json';
-        $this->getFile = $workDir.'/'.$uuid.'.get.json';
-        $this->inputFile = $workDir.'/'.$uuid.'.in.log';
-        $this->outputFile = $workDir.'/'.$uuid.'.out.log';
-        $this->errorOutputFile = $workDir.'/'.$uuid.'.err.log';
+        $this->setFile = $workDir.'/'.$id.'.set.json';
+        $this->getFile = $workDir.'/'.$id.'.get.json';
+        $this->inputFile = $workDir.'/'.$id.'.in.log';
+        $this->outputFile = $workDir.'/'.$id.'.out.log';
+        $this->errorOutputFile = $workDir.'/'.$id.'.err.log';
     }
 
     protected static function readConfig($file)
@@ -47,8 +47,8 @@ abstract class AbstractProcess
             throw new \InvalidArgumentException(sprintf('Config file "%s" does not contain valid JSON.', $file));
         }
 
-        /*if (!isset($config['uuid'])) {
-            throw new \InvalidArgumentException('Missing property "uuid" in config file.');
+        /*if (!isset($config['id'])) {
+            throw new \InvalidArgumentException('Missing property "id" in config file.');
         }*/
 
         return $config;

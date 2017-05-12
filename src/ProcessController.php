@@ -33,7 +33,7 @@ class ProcessController extends AbstractProcess
 
         $this->config = $config;
 
-        parent::__construct($this->config['uuid'], $workDir);
+        parent::__construct($this->config['id'], $workDir);
     }
 
     public function addForker(ForkerInterface $forker)
@@ -181,11 +181,11 @@ class ProcessController extends AbstractProcess
         @unlink($this->errorOutputFile);
     }
 
-    public static function create($workDir, $commandline, $cwd = null, $uuid = null)
+    public static function create($workDir, $commandline, $cwd = null, $id = null)
     {
         return new static(
             [
-                'uuid' => $uuid ?: md5(uniqid('', true)),
+                'id' => $id ?: md5(uniqid('', true)),
                 'commandline' => $commandline,
                 'cwd' => $cwd ?: getcwd(),
             ],
@@ -193,11 +193,11 @@ class ProcessController extends AbstractProcess
         );
     }
 
-    public static function restore($workDir, $uuid)
+    public static function restore($workDir, $id)
     {
-        $config = static::readConfig($workDir.'/'.$uuid.'.set.json');
+        $config = static::readConfig($workDir.'/'.$id.'.set.json');
 
-        if (is_file($getFile = $workDir.'/'.$uuid.'.get.json')) {
+        if (is_file($getFile = $workDir.'/'.$id.'.get.json')) {
             $config = array_merge($config, static::readConfig($getFile));
         }
 
