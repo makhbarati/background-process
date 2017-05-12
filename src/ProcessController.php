@@ -63,7 +63,41 @@ class ProcessController extends AbstractProcess
     {
         $this->updateStatus();
 
-        return $this->config['exitcode'];
+        return isset($this->config['exitcode']) ? (int) $this->config['exitcode'] : null;
+    }
+
+    public function getExitCodeText()
+    {
+        if (null === $exitcode = $this->getExitCode()) {
+            return '';
+        }
+
+        return isset(Process::$exitCodes[$exitcode]) ? Process::$exitCodes[$exitcode] : 'Unknown error';
+    }
+
+    public function isSuccessful()
+    {
+        return 0 === $this->getExitCode();
+    }
+
+    public function hasBeenSignaled()
+    {
+        return isset($this->config['signaled']) ? (bool) $this->config['signaled'] : false;
+    }
+
+    public function getTermSignal()
+    {
+        return isset($this->config['termsig']) ? (int) $this->config['termsig'] : null;
+    }
+
+    public function hasBeenStopped()
+    {
+        return isset($this->config['stopped']) ? (bool) $this->config['stopped'] : false;
+    }
+
+    public function getStopSignal()
+    {
+        return isset($this->config['stopsig']) ? (int) $this->config['stopsig'] : null;
     }
 
     public function isRunning()
