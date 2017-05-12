@@ -185,7 +185,7 @@ class ProcessController extends AbstractProcess
     {
         return new static(
             [
-                'uuid' => $uuid ?: 'foo', // TODO create uuid
+                'uuid' => $uuid ?: md5(uniqid('', true)),
                 'commandline' => $commandline,
                 'cwd' => $cwd ?: getcwd(),
             ],
