@@ -5,7 +5,7 @@ namespace Terminal42\BackgroundProcess\Forker;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class NohupForker extends AbstractForker
+class BashForker extends AbstractForker
 {
     /**
      * {@inheritdoc}
@@ -13,12 +13,12 @@ class NohupForker extends AbstractForker
     public function run($configFile)
     {
         $commandline = sprintf(
-            'exec nohup %s %s >/dev/null &',
+            '%s %s >/dev/null 2>&1 </dev/null',
             $this->executable,
             escapeshellarg($configFile)
         );
 
-        $this->startCommand($commandline);
+        $this->startCommand('exec nohup bash -c '.escapeshellarg($commandline));
     }
 
     /**
@@ -27,7 +27,7 @@ class NohupForker extends AbstractForker
     public function isSupported()
     {
         try {
-            (new Process('exec nohup ls', null, $this->env))->mustRun();
+            (new Process("exec nohup bash --version", null, $this->env))->mustRun();
         } catch (ProcessFailedException $e) {
             return false;
         }
