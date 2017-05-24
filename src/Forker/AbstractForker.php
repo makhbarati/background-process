@@ -13,6 +13,11 @@ abstract class AbstractForker implements ForkerInterface
     protected $executable;
 
     /**
+     * @var array|null
+     */
+    protected $env;
+
+    /**
      * @var LoggerInterface
      */
     protected $logger;
@@ -26,11 +31,13 @@ abstract class AbstractForker implements ForkerInterface
      * Constructor.
      *
      * @param string               $executable
+     * @param array|null           $env
      * @param LoggerInterface|null $logger
      */
-    public function __construct($executable = null, LoggerInterface $logger = null)
+    public function __construct($executable = null, array $env = null, LoggerInterface $logger = null)
     {
         $this->executable = $executable ?: escapeshellarg(__DIR__.'/../../bin/background-process');
+        $this->env = $env;
         $this->logger = $logger;
     }
 

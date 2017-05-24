@@ -27,7 +27,7 @@ class DisownForker extends AbstractForker
     public function isSupported()
     {
         try {
-            (new Process("exec echo '' & disown"))->mustRun();
+            (new Process("exec echo '' & disown", null, $this->env))->mustRun();
         } catch (ProcessFailedException $e) {
             return false;
         }
