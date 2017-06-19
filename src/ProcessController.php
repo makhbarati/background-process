@@ -217,6 +217,8 @@ class ProcessController extends AbstractProcess
             if ($forker->isSupported()) {
                 return $forker;
             }
+
+            error_log(get_class($forker) . ' is not supported');
         }
 
         throw new \RuntimeException('No forker found for your current platform.');
@@ -249,6 +251,14 @@ class ProcessController extends AbstractProcess
         @unlink($this->errorOutputFile);
     }
 
+    /**
+     * @param string       $workDir
+     * @param array|string $commandline
+     * @param string|null  $cwd
+     * @param string|null  $id
+     *
+     * @return static
+     */
     public static function create($workDir, $commandline, $cwd = null, $id = null)
     {
         return new static(
@@ -261,6 +271,12 @@ class ProcessController extends AbstractProcess
         );
     }
 
+    /**
+     * @param string $workDir
+     * @param string $id
+     *
+     * @return static
+     */
     public static function restore($workDir, $id)
     {
         $config = static::readConfig($workDir.'/'.$id.'.set.json');

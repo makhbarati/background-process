@@ -12,11 +12,9 @@ class NohupForker extends AbstractForker
      */
     public function run($configFile)
     {
-        $commandline = sprintf(
-            'exec nohup %s %s >/dev/null </dev/null 2>&1 &',
-            $this->executable,
-            escapeshellarg($configFile)
-        );
+        $commandline = $this->executable;
+        array_unshift($commandline, 'nohup');
+        array_push($commandline, $configFile, '>/dev/null', '</dev/null', '2>&1', '&');
 
         $this->startCommand($commandline);
     }
@@ -27,7 +25,7 @@ class NohupForker extends AbstractForker
     public function isSupported()
     {
         try {
-            (new Process('exec nohup ls', null, $this->env))->mustRun();
+            (new Process('nohup ls', null, $this->env))->mustRun();
         } catch (ProcessFailedException $e) {
             return false;
         }

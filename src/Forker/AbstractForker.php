@@ -8,7 +8,7 @@ use Symfony\Component\Process\Process;
 abstract class AbstractForker implements ForkerInterface
 {
     /**
-     * @var string
+     * @var array
      */
     protected $executable;
 
@@ -30,13 +30,13 @@ abstract class AbstractForker implements ForkerInterface
     /**
      * Constructor.
      *
-     * @param string               $executable
+     * @param array                $executable
      * @param array|null           $env
      * @param LoggerInterface|null $logger
      */
-    public function __construct($executable = null, array $env = null, LoggerInterface $logger = null)
+    public function __construct(array $executable = null, array $env = null, LoggerInterface $logger = null)
     {
-        $this->executable = $executable ?: escapeshellarg(__DIR__.'/../../bin/background-process');
+        $this->executable = $executable ?: [__DIR__.'/../../bin/background-process'];
         $this->env = $env;
         $this->logger = $logger;
     }
@@ -44,7 +44,7 @@ abstract class AbstractForker implements ForkerInterface
     /**
      * {@inheritdoc}
      */
-    public function setExecutable($executable)
+    public function setExecutable(array $executable)
     {
         $this->executable = $executable;
 
@@ -78,23 +78,25 @@ abstract class AbstractForker implements ForkerInterface
     }
 
     /**
-     * @param string $commandline
+     * @param array $commandline
+     *
+     * @return Process
      */
-    protected function startCommand($commandline)
+    protected function startCommand(array $commandline)
     {
+        $process = new Process($commandline, null, $this->env);
+        $process->setTimeout(null);
+        $process->setIdleTimeout(null);
+
         if (null !== $this->logger) {
             $this->logger->info(
                 'Starting "{commandline}" with {forker_class}',
                 [
-                    'commandline' => $commandline,
+                    'commandline' => $process->getCommandLine(),
                     'forker_class' => get_called_class(),
                 ]
             );
         }
-
-        $process = new Process($commandline, null, $this->env);
-        $process->setTimeout(null);
-        $process->setIdleTimeout(null);
 
         $process->start();
 
@@ -104,7 +106,7 @@ abstract class AbstractForker implements ForkerInterface
             $this->logger->error(
                 'Process did not start correctly',
                 [
-                    'commandline' => $commandline,
+                    'commandline' => $process->getCommandLine(),
                     'forker_class' => get_called_class(),
                     'exit_code' => $process->getExitCode(),
                     'exit_text' => $process->getExitCodeText(),

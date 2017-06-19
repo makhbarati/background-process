@@ -12,11 +12,8 @@ class InlineForker extends AbstractForker
      */
     public function run($configFile)
     {
-        $commandline = sprintf(
-            '%s %s',
-            $this->executable,
-            escapeshellarg($configFile)
-        );
+        $commandline = $this->executable;
+        array_push($commandline, $configFile);
 
         $process = $this->startCommand($commandline);
         $process->wait();

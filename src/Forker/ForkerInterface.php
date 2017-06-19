@@ -5,16 +5,16 @@ namespace Terminal42\BackgroundProcess\Forker;
 interface ForkerInterface
 {
     /**
-     * Sets the executable to use for the background process.
+     * Sets the executable with arguments to use for the background process.
      *
-     * @param string $executable
+     * @param array $executable
      */
-    public function setExecutable($executable);
+    public function setExecutable(array $executable);
 
     /**
-     * Gets the executable to use for the background process.
+     * Gets the executable with arguments to use for the background process.
      *
-     * @return string
+     * @return array
      */
     public function getExecutable();
 

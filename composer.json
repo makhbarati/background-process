@@ -2,10 +2,10 @@
     "name": "terminal42/background-process",
     "require": {
         "php": ">=5.5.9",
-        "symfony/process": "^3.2"
+        "symfony/process": "^3.3"
     },
     "require-dev": {
-        "symfony/console": "^3.2",
+        "symfony/console": "^3.3",
         "psr/log": "^1.0"
     },
     "suggest": {
