@@ -63,13 +63,15 @@ class ProcessController extends AbstractProcess
 
     public function start()
     {
+        if ($this->config['status'] === Process::STATUS_STARTED) {
+            return;
+        }
+
         $this->saveConfig(true);
 
         $this->config['status'] = Process::STATUS_STARTED;
 
-        $forker = $this->getForker();
-
-        $forker->run($this->setFile);
+        $this->getForker()->run($this->setFile);
     }
 
     public function getPid()
