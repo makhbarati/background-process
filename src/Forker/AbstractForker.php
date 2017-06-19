@@ -42,9 +42,7 @@ abstract class AbstractForker implements ForkerInterface
     }
 
     /**
-     * @param string $executable
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setExecutable($executable)
     {
@@ -54,7 +52,7 @@ abstract class AbstractForker implements ForkerInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getExecutable()
     {
@@ -62,17 +60,21 @@ abstract class AbstractForker implements ForkerInterface
     }
 
     /**
-     * Sets the timeout in milliseconds to wait after starting a process.
-     *
-     * @param int $timeout
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setTimeout($timeout)
     {
         $this->timeout = (int) $timeout;
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getTimeout()
+    {
+        return $this->timeout;
     }
 
     /**
