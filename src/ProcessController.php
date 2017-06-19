@@ -41,6 +41,26 @@ class ProcessController extends AbstractProcess
         $this->forkers[] = $forker;
     }
 
+    /**
+     * Stores meta information about the process.
+     *
+     * @param array $meta
+     */
+    public function setMeta(array $meta)
+    {
+        $this->config['meta'] = $meta;
+    }
+
+    /**
+     * Gets meta information of the process.
+     *
+     * @return array|null
+     */
+    public function getMeta()
+    {
+        return array_key_exists('meta', $this->config) ? $this->config['meta'] : null;
+    }
+
     public function start()
     {
         $this->saveConfig(true);
