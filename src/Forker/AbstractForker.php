@@ -91,7 +91,8 @@ abstract class AbstractForker implements ForkerInterface
         }
 
         $process = new Process($commandline);
-        $process->setTimeout(0);
+        $process->setTimeout(null);
+        $process->setIdleTimeout(null);
 
         $process->start();
 
