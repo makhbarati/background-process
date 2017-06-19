@@ -5,7 +5,7 @@ namespace Terminal42\BackgroundProcess\Forker;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
-class StartForker extends AbstractForker
+class WindowsStartForker extends AbstractForker
 {
     /**
      * {@inheritdoc}
@@ -24,14 +24,18 @@ class StartForker extends AbstractForker
     /**
      * {@inheritdoc}
      */
-    public function isSupported()
-    {
-        try {
-            (new Process('start /b dir', null, $this->env))->mustRun();
-        } catch (ProcessFailedException $e) {
-            return false;
-        }
+     public function isSupported()
+     {
+         if ('\\' !== DIRECTORY_SEPARATOR) {
+           return false;
+         }
 
-        return true;
-    }
+         try {
+             (new Process('start /b dir', null, $this->env))->mustRun();
+         } catch (ProcessFailedException $e) {
+             return false;
+         }
+
+         return true;
+     }
 }
