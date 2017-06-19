@@ -92,7 +92,7 @@ abstract class AbstractForker implements ForkerInterface
             );
         }
 
-        $process = new Process($commandline);
+        $process = new Process($commandline, null, $this->env);
         $process->setTimeout(null);
         $process->setIdleTimeout(null);
 
