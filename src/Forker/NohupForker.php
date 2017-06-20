@@ -27,7 +27,7 @@ class NohupForker extends AbstractForker
     public function isSupported()
     {
         try {
-            (new Process('exec nohup ls', null, $this->env))->mustRun();
+            (new Process('exec nohup ls'))->mustRun(null, $this->env);
         } catch (ProcessFailedException $e) {
             return false;
         }

@@ -79,6 +79,8 @@ abstract class AbstractForker implements ForkerInterface
 
     /**
      * @param string $commandline
+     *
+     * @return Process
      */
     protected function startCommand($commandline)
     {
@@ -92,11 +94,11 @@ abstract class AbstractForker implements ForkerInterface
             );
         }
 
-        $process = new Process($commandline, null, $this->env);
+        $process = new Process($commandline);
         $process->setTimeout(null);
         $process->setIdleTimeout(null);
 
-        $process->start();
+        $process->start(null, $this->env);
 
         usleep($this->timeout);
 
