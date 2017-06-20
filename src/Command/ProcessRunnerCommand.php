@@ -27,6 +27,9 @@ class ProcessRunnerCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        set_time_limit(0);
+        ignore_user_abort(true);
+
         $process = new ProcessRunner($input->getArgument('path'));
 
         try {
