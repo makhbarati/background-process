@@ -31,7 +31,7 @@ class WindowsStartForker extends AbstractForker
         }
 
         try {
-            (new Process('start /b dir', null, $this->env))->mustRun();
+            (new Process('start /b dir'))->mustRun(null, $this->env);
         } catch (ProcessFailedException $e) {
             return false;
         }
