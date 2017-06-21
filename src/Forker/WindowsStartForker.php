@@ -24,18 +24,18 @@ class WindowsStartForker extends AbstractForker
     /**
      * {@inheritdoc}
      */
-     public function isSupported()
-     {
-         if ('\\' !== DIRECTORY_SEPARATOR) {
-           return false;
-         }
+    public function isSupported()
+    {
+        if ('\\' !== DIRECTORY_SEPARATOR) {
+            return false;
+        }
 
-         try {
-             (new Process('start /b dir', null, $this->env))->mustRun();
-         } catch (ProcessFailedException $e) {
-             return false;
-         }
+        try {
+            (new Process('start /b dir', null, $this->env))->mustRun();
+        } catch (ProcessFailedException $e) {
+            return false;
+        }
 
-         return true;
-     }
+        return true;
+    }
 }
