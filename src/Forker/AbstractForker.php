@@ -102,7 +102,7 @@ abstract class AbstractForker implements ForkerInterface
 
         usleep($this->timeout);
 
-        if (null !== $this->logger && !$process->isRunning()) {
+        if (null !== $this->logger && !$process->isStarted()) {
             $this->logger->error(
                 'Process did not start correctly',
                 [
