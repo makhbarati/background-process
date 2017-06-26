@@ -42,6 +42,16 @@ class ProcessController extends AbstractProcess
     }
 
     /**
+     * Gets the task ID.
+     *
+     * @return string
+     */
+    public function getId()
+    {
+        return (string) $this->config['id'];
+    }
+
+    /**
      * Stores meta information about the process.
      *
      * @param array $meta
