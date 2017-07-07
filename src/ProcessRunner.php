@@ -200,6 +200,6 @@ class ProcessRunner extends AbstractProcess
             $config['stopsig'] = $this->process->getStopSignal();
         }
 
-        file_put_contents($this->getFile, json_encode($config));
+        static::writeConfig($this->getFile, $config);
     }
 }

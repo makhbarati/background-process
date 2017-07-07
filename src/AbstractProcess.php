@@ -35,22 +35,55 @@ abstract class AbstractProcess
         $this->errorOutputFile = $workDir.'/'.$id.'.err.log';
     }
 
-    protected static function readConfig($file)
+    /**
+     * @param string $filename
+     *
+     * @return array
+     * @throws \RuntimeException
+     */
+    protected static function readConfig($filename)
     {
-        if (!is_file($file)) {
-            throw new \InvalidArgumentException(sprintf('Config file "%s" does not exist.', $file));
+        if (!is_file($filename)) {
+            throw new \InvalidArgumentException(sprintf('Config file "%s" does not exist.', $filename));
         }
 
-        $config = json_decode(file_get_contents($file), true);
+        $fp = fopen($filename, 'rb');
+
+        if (!flock($fp, LOCK_SH)) {
+            throw new \RuntimeException(sprintf('Failed to aquire lock for "%s"', $filename));
+        }
+
+        $content = fread($fp, filesize($filename));
+        flock($fp, LOCK_UN);
+        fclose($fp);
+
+        $config = json_decode($content, true);
 
         if (!is_array($config)) {
-            throw new \InvalidArgumentException(sprintf('Config file "%s" does not contain valid JSON.', $file));
+            throw new \InvalidArgumentException(sprintf('Config file "%s" does not contain valid JSON.', $filename));
         }
 
-        /*if (!isset($config['id'])) {
-            throw new \InvalidArgumentException('Missing property "id" in config file.');
-        }*/
-
         return $config;
+    }
+
+    /**
+     * @param string $filename
+     * @param array  $config
+     *
+     * @throws \RuntimeException
+     */
+    protected static function writeConfig($filename, array $config)
+    {
+        $fp = fopen($filename, 'cb');
+
+        if (!flock($fp, LOCK_EX)) {
+            throw new \RuntimeException(sprintf('Failed to aquire lock for "%s"', $filename));
+        }
+
+        ftruncate($fp, 0);
+        fwrite($fp, json_encode($config));
+        fflush($fp);
+        flock($fp, LOCK_UN);
+        fclose($fp);
     }
 }

@@ -235,7 +235,7 @@ class ProcessController extends AbstractProcess
     private function saveConfig($always = false)
     {
         if ($always || Process::STATUS_STARTED === $this->config['status']) {
-            file_put_contents($this->setFile, json_encode($this->config));
+            static::writeConfig($this->setFile, $this->config);
         }
     }
 
