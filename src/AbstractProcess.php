@@ -2,6 +2,8 @@
 
 namespace Terminal42\BackgroundProcess;
 
+use Terminal42\BackgroundProcess\Exception\InvalidJsonException;
+
 abstract class AbstractProcess
 {
     protected $setFile;
@@ -39,7 +41,8 @@ abstract class AbstractProcess
      * @param string $filename
      *
      * @return array
-     * @throws \RuntimeException
+     *
+     * @throws InvalidJsonException
      */
     protected static function readConfig($filename)
     {
@@ -51,7 +54,7 @@ abstract class AbstractProcess
         $config = json_decode($content, true);
 
         if (!is_array($config)) {
-            throw new \InvalidArgumentException(sprintf('Config file "%s" does not contain valid JSON.', $filename));
+            throw new InvalidJsonException($filename, $content);
         }
 
         return $config;
