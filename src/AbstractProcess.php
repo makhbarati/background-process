@@ -47,16 +47,7 @@ abstract class AbstractProcess
             throw new \InvalidArgumentException(sprintf('Config file "%s" does not exist.', $filename));
         }
 
-        $fp = fopen($filename, 'rb');
-
-        if (!flock($fp, LOCK_SH)) {
-            throw new \RuntimeException(sprintf('Failed to aquire lock for "%s"', $filename));
-        }
-
-        $content = fread($fp, filesize($filename));
-        flock($fp, LOCK_UN);
-        fclose($fp);
-
+        $content = file_get_contents($filename);
         $config = json_decode($content, true);
 
         if (!is_array($config)) {
@@ -74,16 +65,16 @@ abstract class AbstractProcess
      */
     protected static function writeConfig($filename, array $config)
     {
-        $fp = fopen($filename, 'cb');
+        if (false !== ($tmp = tempnam(dirname($filename), basename($filename)))) {
+            $content = json_encode($config);
 
-        if (!flock($fp, LOCK_EX)) {
-            throw new \RuntimeException(sprintf('Failed to aquire lock for "%s"', $filename));
+            if (file_put_contents($tmp, $content) === strlen($content)) {
+                if (rename($tmp, $filename)) {
+                    return;
+                }
+            }
         }
 
-        ftruncate($fp, 0);
-        fwrite($fp, json_encode($config));
-        fflush($fp);
-        flock($fp, LOCK_UN);
-        fclose($fp);
+        throw new \RuntimeException(sprintf('Unable to write config file to %s', $filename));
     }
 }
