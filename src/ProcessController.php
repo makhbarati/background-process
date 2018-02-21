@@ -163,7 +163,7 @@ class ProcessController extends AbstractProcess
 
     public function delete()
     {
-        if (!$this->isTerminated()) {
+        if ($this->isRunning()) {
             throw new \LogicException('Cannot delete a running process.');
         }
 
