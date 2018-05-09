@@ -2,6 +2,8 @@
 
 namespace Terminal42\BackgroundProcess;
 
+use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\Filesystem\Filesystem;
 use Terminal42\BackgroundProcess\Exception\InvalidJsonException;
 
 abstract class AbstractProcess
@@ -68,16 +70,10 @@ abstract class AbstractProcess
      */
     protected static function writeConfig($filename, array $config)
     {
-        if (false !== ($tmp = tempnam(dirname($filename), basename($filename)))) {
-            $content = json_encode($config);
-
-            if (file_put_contents($tmp, $content) === strlen($content)) {
-                if (rename($tmp, $filename)) {
-                    return;
-                }
-            }
+        try {
+            (new Filesystem())->dumpFile($filename, json_encode($config));
+        } catch (IOException $e) {
+            throw new \RuntimeException(sprintf('Unable to write config file to %s', $filename));
         }
-
-        throw new \RuntimeException(sprintf('Unable to write config file to %s', $filename));
     }
 }
