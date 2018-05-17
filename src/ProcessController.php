@@ -147,6 +147,11 @@ class ProcessController extends AbstractProcess
         return Process::STATUS_TERMINATED === $this->getStatus();
     }
 
+    public function isTimedOut()
+    {
+        return Process::STATUS_TERMINATED === $this->getStatus() && $this->config['timedout'] > 0;
+    }
+
     public function getStatus()
     {
         $this->updateStatus();

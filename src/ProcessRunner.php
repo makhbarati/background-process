@@ -3,6 +3,7 @@ declare(ticks = 1);
 
 namespace Terminal42\BackgroundProcess;
 
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
 class ProcessRunner extends AbstractProcess
@@ -11,6 +12,11 @@ class ProcessRunner extends AbstractProcess
      * @var Process
      */
     private $process;
+
+    /**
+     * @var ProcessTimedOutException|null
+     */
+    private $timeout;
 
     private $stdin;
     private $stdout;
@@ -89,8 +95,13 @@ class ProcessRunner extends AbstractProcess
         do {
             usleep($interval * 1000000);
 
-            $this->process->checkTimeout();
-            $running = $this->process->isRunning();
+            try {
+                $this->process->checkTimeout();
+                $running = $this->process->isRunning();
+            } catch (ProcessTimedOutException $e) {
+                $this->timeout = $e;
+                $running = false;
+            }
 
             $config = $this->loadConfig();
 
@@ -198,8 +209,29 @@ class ProcessRunner extends AbstractProcess
             $config['termsig'] = $this->process->getTermSignal();
             $config['stopped'] = $this->process->hasBeenStopped();
             $config['stopsig'] = $this->process->getStopSignal();
+            $config['timedout'] = $this->timeoutCode();
         }
 
         static::writeConfig($this->getFile, $config);
+    }
+
+    /**
+     * Returns the timeout type.
+     *
+     * @return int
+     */
+    private function timeoutCode()
+    {
+        if ($this->timeout instanceof ProcessTimedOutException) {
+            switch (true) {
+                case $this->timeout->isGeneralTimeout():
+                    return ProcessTimedOutException::TYPE_GENERAL;
+
+                case $this->timeout->isIdleTimeout():
+                    return ProcessTimedOutException::TYPE_IDLE;
+            }
+        }
+
+        return 0;
     }
 }
