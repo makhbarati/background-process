@@ -1,7 +1,7 @@
 {
     "name": "terminal42/background-process",
     "require": {
-        "php": ">=5.5.9",
+        "php": "^7.0",
         "symfony/process": "^3.3",
         "symfony/filesystem": "^3.3"
     },
